@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ledger — a free inventory &amp; business manager, kept like a fine book</title>
+<meta name="description" content="The Ledger is a free inventory and business manager. Track stock, record sales, see your profit — on your phone, fully offline, no account required to start.">
+<meta property="og:title" content="The Ledger — run your business by the book">
+<meta property="og:description" content="A free inventory &amp; business manager. Offline-first, installable on any phone, no account required. Your data lives on your device.">
+<meta property="og:image" content="https://mkgotbank.github.io/ledger-site/assets/icon-1024.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mkgotbank.github.io/ledger-site/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Ledger — run your business by the book">
+<meta name="twitter:description" content="A free inventory &amp; business manager. Offline-first, installable on any phone, no account required.">
+<meta name="twitter:image" content="https://mkgotbank.github.io/ledger-site/assets/icon-1024.png">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="apple-touch-icon" href="assets/icon-1024.png">
+<meta name="theme-color" content="#eef6ff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#eef6ff;
+  --card:#ffffff;
+  --ink:#1a2a3a;
+  --ink-bold:#0a1828;
+  --ink-dim:#4a6880;
+  --azure:#0a6dba;
+  --azure-hi:#2b8fd4;
+  --azure-deep:#08487e;
+  --ice-sheen:#bfe8ff;
+  --gold-1:#fff7d8; --gold-2:#f4dc8a; --gold-3:#e4ba4c; --gold-4:#c39a32; --gold-5:#9c7318;
+  --gold-stroke:#8a6915;
+  --gold-rule:linear-gradient(90deg,#c39a32 0%,#f4dc8a 18%,#e4ba4c 42%,#9c7318 70%,#e4ba4c 100%);
+  --gold-text:linear-gradient(115deg,#a8801f 0%,#8a6915 38%,#c39a32 55%,#8a6915 78%,#9c7318 100%);
+  --serif:"Playfair Display",Didot,"Bodoni 72",Georgia,serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --shadow-card:0 1px 2px rgba(8,72,126,.06),0 10px 30px -12px rgba(8,72,126,.14);
+  --shadow-deep:0 2px 6px rgba(8,72,126,.10),0 30px 60px -22px rgba(8,72,126,.30);
+  --maxw:1120px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background-color:var(--page);
+  /* ruled-line laid-paper texture — scrolls with the page (no fixed-layer repaints on iOS) */
+  background-image:repeating-linear-gradient(0deg,rgba(10,109,186,.022) 0,rgba(10,109,186,.022) 1px,transparent 1px,transparent 34px);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:var(--azure)}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-999px;top:0;background:var(--azure-deep);color:#fff;padding:.6rem 1rem;z-index:99;border-radius:0 0 8px 0}
+.skip:focus{left:0}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* =================== NAV =================== */
+header.site{
+  position:sticky;top:0;z-index:50;
+  background:rgba(238,246,255,.86);
+  backdrop-filter:saturate(1.2) blur(10px);
+  -webkit-backdrop-filter:saturate(1.2) blur(10px);
+  border-bottom:1px solid rgba(196,154,50,0);
+  transition:border-color .3s ease,box-shadow .3s ease;
+}
+header.site.scrolled{
+  border-bottom-color:rgba(196,154,50,.45);
+  box-shadow:0 8px 24px -16px rgba(8,72,126,.25);
+}
+.nav{display:flex;align-items:center;gap:1.4rem;padding:.7rem 24px;max-width:var(--maxw);margin:0 auto}
+.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--ink-bold)}
+.brand img{width:34px;height:34px;border-radius:8px;box-shadow:0 2px 6px rgba(8,72,126,.25)}
+.brand b{font-family:var(--serif);font-weight:700;font-size:1.18rem;letter-spacing:.01em;white-space:nowrap}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:1.4rem}
+.nav-links a{
+  font-size:.92rem;font-weight:500;color:var(--ink);text-decoration:none;padding-bottom:2px;
+  background:linear-gradient(90deg,var(--gold-4),var(--gold-2),var(--gold-5)) no-repeat left bottom/0% 1px;
+  transition:background-size .35s ease,color .2s ease;
+}
+.nav-links a:hover{color:var(--azure-deep);background-size:100% 1px}
+
+/* mobile disclosure menu — works without JS */
+.mnav{display:none;position:relative;margin-left:auto}
+.mnav summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:9px;color:var(--azure-deep);
+  border:1px solid rgba(10,109,186,.3);background:#fff;
+}
+.mnav summary::-webkit-details-marker{display:none}
+.mnav[open] summary{background:rgba(60,180,239,.1)}
+.mnav-panel{
+  position:absolute;right:0;top:calc(100% + 10px);min-width:200px;
+  background:var(--card);border-radius:14px;box-shadow:var(--shadow-deep);
+  border:1px solid rgba(196,154,50,.35);padding:.5rem;display:grid;
+}
+.mnav-panel a{
+  text-decoration:none;color:var(--ink-bold);font-weight:500;font-size:.95rem;
+  padding:.6rem .8rem;border-radius:9px;
+}
+.mnav-panel a:hover{background:rgba(60,180,239,.1);color:var(--azure-deep)}
+@media (max-width:720px){
+  .nav{gap:.8rem}
+  .nav-links{display:none}
+  .mnav{display:block}
+}
+@media (max-width:420px){ /* 360–414px: keep brand + menu + CTA on one 50px line */
+  .nav{gap:.6rem;padding:.7rem 14px}
+  .brand{gap:.5rem}
+  .brand b{font-size:1.02rem}
+  .cta.btn-azure{padding:.5rem .8rem;font-size:.84rem}
+}
+
+/* =================== BUTTONS =================== */
+.btn{
+  display:inline-flex;align-items:center;gap:.55rem;
+  font-family:var(--sans);font-weight:600;font-size:1rem;text-decoration:none;
+  padding:.85rem 1.5rem;border-radius:10px;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.btn svg{flex:none}
+.btn-azure{
+  background:linear-gradient(180deg,var(--azure-hi),var(--azure) 55%,var(--azure-deep));
+  color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 8px 20px -8px rgba(8,72,126,.55);
+}
+.btn-azure:not(.magnet):hover{transform:translateY(-2px)}
+.btn-azure:hover{box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 14px 26px -10px rgba(8,72,126,.6)}
+.btn-quiet{color:var(--azure-deep);background:transparent;border:1px solid rgba(10,109,186,.35)}
+.btn-quiet:hover{background:rgba(10,109,186,.07)}
+.cta.btn-azure{padding:.55rem 1.05rem;font-size:.9rem;border-radius:9px;white-space:nowrap}
+.btn-hero{font-size:1.1rem;padding:1rem 2rem}
+
+/* =================== GOLD DETAILS =================== */
+.gold-rule{height:2px;background:var(--gold-rule);border:none;border-radius:1px}
+.hairline{
+  height:1px;border:0;
+  background:linear-gradient(90deg,transparent,var(--gold-3) 18%,var(--gold-4) 50%,var(--gold-3) 82%,transparent);
+  opacity:.8;
+}
+.gold-word{
+  background:var(--gold-text);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-style:italic;padding-right:.04em;
+}
+.entry-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:.4rem}
+.entry-no{
+  font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold-stroke);white-space:nowrap;
+}
+.entry-head .gold-rule{flex:1;align-self:center}
+.folio{
+  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);white-space:nowrap;
+}
+h2.entry-title{
+  font-family:var(--serif);font-weight:600;color:var(--ink-bold);
+  font-size:clamp(1.8rem,3.6vw,2.6rem);line-height:1.15;margin:.5rem 0 1rem;
+}
+section.entry{padding:5.5rem 0 1rem}
+.entry-lede{max-width:42em;color:var(--ink-dim)}
+
+/* hand-ruled gold strokes under the headline (pen ruling lines in a ledger) */
+.rules{width:200px;height:18px;margin:.4rem 0 .2rem;overflow:visible}
+.rules path{
+  stroke:url(#ruleGold);stroke-width:2.5;stroke-linecap:round;fill:none;
+  stroke-dasharray:200;stroke-dashoffset:0; /* visible by default; GSAP draws it */
+}
+
+/* =================== HERO =================== */
+.hero{padding:4.5rem 0 4rem;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:3.5rem;align-items:center}
+@media (max-width:920px){.hero .wrap{grid-template-columns:1fr;gap:3rem}}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.82rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--azure-deep);
+  border:1px solid rgba(10,109,186,.25);border-radius:999px;padding:.4rem .95rem;background:#fff;
+  box-shadow:var(--shadow-card);
+}
+.hero-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--gold-4);flex:none}
+h1{
+  font-family:var(--serif);font-weight:700;color:var(--ink-bold);
+  font-size:clamp(2.6rem,5.6vw,4.3rem);line-height:1.06;letter-spacing:-.01em;
+  margin:1.3rem 0 .4rem;
+}
+.hl-line{display:block}
+.hero-sub{font-size:1.13rem;color:var(--ink-dim);max-width:34em;margin:1rem 0 1.8rem}
+.hero-sub strong{color:var(--ink-bold);font-weight:600}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:.9rem;align-items:center}
+.hero-note{margin-top:1rem;font-size:.88rem;color:var(--ink-dim);display:flex;align-items:center;gap:.45rem}
+.hero-note svg{color:var(--gold-stroke)}
+
+/* hero art: book + phone */
+.hero-art{position:relative;display:flex;justify-content:center}
+.hero-glow{
+  position:absolute;width:420px;height:420px;left:50%;top:50%;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(60,180,239,.28),rgba(191,232,255,.12) 55%,transparent 75%);
+  pointer-events:none;will-change:transform;
+}
+.hero-book{
+  position:absolute;width:118px;height:118px;right:4%;top:-26px;z-index:3;
+  filter:drop-shadow(0 14px 24px rgba(8,72,126,.35));
+  transform:rotate(6deg);will-change:transform;
+}
+@media (max-width:480px){.hero-book{width:88px;height:88px;top:-18px}}
+
+/* floating claim chips (honest, scannable) */
+.chip{
+  position:absolute;z-index:4;background:#fff;border-radius:12px;padding:.5rem .8rem;
+  font-size:.78rem;font-weight:600;color:var(--ink-bold);
+  box-shadow:var(--shadow-card);border:1px solid rgba(196,154,50,.35);
+  display:flex;align-items:center;gap:.45rem;white-space:nowrap;
+}
+.chip svg{width:14px;height:14px;color:var(--azure);flex:none}
+.chip.c1{top:14%;left:0;transform:rotate(-2deg)}
+.chip.c2{bottom:12%;right:0;transform:rotate(1.6deg)}
+@media (max-width:1060px){.chip.c1{left:-.2rem}.chip.c2{right:-.2rem}}
+
+/* =================== PHONE MOCKUP =================== */
+.phone{
+  position:relative;z-index:2;width:300px;
+  border-radius:42px;background:#0b1a28;
+  padding:10px;box-shadow:var(--shadow-deep);will-change:transform;
+}
+.phone::after{ /* side button hint */
+  content:"";position:absolute;right:-2px;top:110px;width:3px;height:54px;border-radius:2px;background:#22364a;
+}
+.screen{
+  border-radius:33px;overflow:hidden;background:var(--page);
+  font-size:12.5px;line-height:1.45;
+}
+.app-head{
+  display:flex;align-items:center;gap:.5rem;padding:.85rem .9rem .7rem;
+  background:linear-gradient(180deg,#3cb4ef,#1a8fd6 55%,#0a66ac);color:#fff;
+}
+.app-head img{width:22px;height:22px;border-radius:6px}
+.app-head b{font-family:var(--serif);font-size:.98rem;letter-spacing:.01em}
+.app-head .sync{margin-left:auto;display:flex;align-items:center;gap:.3rem;font-size:.66rem;opacity:.92}
+.app-head .sync i{width:6px;height:6px;border-radius:50%;background:var(--ice-sheen);display:block}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:9px}
+.stat{
+  background:var(--card);border-radius:10px;padding:.5rem .55rem;
+  box-shadow:0 1px 3px rgba(8,72,126,.08);
+}
+.stat .lab{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim)}
+.stat .val{font-weight:600;color:var(--ink-bold);font-size:.92rem}
+.stat .val.gold{color:var(--gold-stroke)}
+.scr-label{padding:.25rem .8rem .2rem;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
+.item-rows{padding:0 9px 9px;display:grid;gap:6px}
+.item{
+  background:var(--card);border-radius:10px;padding:.5rem .6rem;
+  display:flex;align-items:center;gap:.55rem;box-shadow:0 1px 3px rgba(8,72,126,.07);
+}
+.item .swatch{width:26px;height:26px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(160deg,#3cb4ef,#0a66ac)}
+.item .swatch svg{width:14px;height:14px}
+.item .nm{font-weight:600;color:var(--ink-bold);font-size:.8rem}
+.item .meta{font-size:.66rem;color:var(--ink-dim)}
+.item .pr{margin-left:auto;text-align:right}
+.item .pr b{display:block;color:var(--ink-bold);font-size:.8rem}
+.item .pr span{font-size:.64rem;color:var(--ink-dim)}
+.item .pr span.low{color:var(--gold-stroke);font-weight:600}
+.app-foot{
+  display:flex;justify-content:space-around;padding:.55rem 0 .8rem;color:var(--ink-dim);
+  border-top:1px solid rgba(10,109,186,.1);background:var(--card);
+}
+.app-foot svg{width:17px;height:17px}
+.app-foot .on{color:var(--azure)}
+
+/* =================== STORY =================== */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;margin-top:1.5rem}
+@media (max-width:840px){.story-grid{grid-template-columns:1fr}}
+.story p{margin-bottom:1.1rem;color:var(--ink)}
+.story p strong{color:var(--ink-bold)}
+.story .lede{font-family:var(--serif);font-size:1.35rem;line-height:1.45;color:var(--ink-bold);font-weight:500}
+.story .first::first-letter{
+  font-family:var(--serif);font-weight:700;font-style:italic;
+  font-size:3.2em;line-height:.8;float:left;
+  padding:.08em .12em 0 0;color:var(--azure-deep);
+}
+.pull{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:clamp(1.35rem,2.4vw,1.8rem);line-height:1.35;
+  color:var(--azure-deep);max-width:26rem;
+  border-left:3px solid;border-image:linear-gradient(180deg,var(--gold-2),var(--gold-4),var(--gold-5)) 1;
+  padding-left:1.4rem;margin:1.6rem 0 .4rem;
+}
+.story-aside{
+  background:var(--card);border-radius:16px;padding:1.8rem 1.9rem;box-shadow:var(--shadow-card);
+  position:relative;overflow:hidden;
+}
+.story-aside::before{ /* gold gilt bar that respects the card radius */
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#c39a32,#f4dc8a,#9c7318);
+}
+.story-aside h3{font-family:var(--serif);font-size:1.15rem;color:var(--ink-bold);margin-bottom:.9rem}
+.story-aside ul{list-style:none;display:grid;gap:.7rem}
+.story-aside li{display:flex;gap:.65rem;align-items:flex-start;font-size:.95rem}
+.story-aside li svg{flex:none;margin-top:.2rem;color:var(--gold-stroke)}
+
+/* =================== SIGNATURE: LIVING LEDGER =================== */
+.ledger-stage{margin:2.2rem 0 3rem}
+.ledger-page{
+  max-width:680px;margin:0 auto;background:var(--card);border-radius:6px 18px 18px 6px;
+  box-shadow:var(--shadow-deep);position:relative;overflow:hidden;
+  padding:2.2rem 2.4rem 2rem 3rem;
+}
+@media (max-width:560px){.ledger-page{padding:1.8rem 1.4rem 1.6rem 2rem}}
+.ledger-page::before{ /* spine */
+  content:"";position:absolute;left:0;top:0;bottom:0;width:14px;
+  background:linear-gradient(90deg,rgba(8,72,126,.16),rgba(8,72,126,.04) 60%,transparent);
+}
+.ledger-page::after{ /* gilt page edge */
+  content:"";position:absolute;right:0;top:10px;bottom:10px;width:4px;border-radius:2px;
+  background:linear-gradient(180deg,#f4dc8a,#c39a32 40%,#fff7d8 60%,#9c7318);
+}
+.ledger-page .ribbon{
+  position:absolute;top:-4px;right:46px;width:18px;height:74px;
+  background:linear-gradient(180deg,#e4ba4c,#c39a32 70%,#9c7318);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);
+  box-shadow:0 3px 6px rgba(8,72,126,.2);
+}
+.lp-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.3rem;padding-right:74px} /* keep the date clear of the bookmark ribbon */
+.lp-head .title{font-family:var(--serif);font-weight:600;font-size:1.25rem;color:var(--ink-bold)}
+.lp-head .date{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
+.ledger-page > .gold-rule{margin-bottom:.3rem}
+.lrow{
+  display:grid;grid-template-columns:3.4rem 1fr auto;gap:1rem;align-items:baseline;
+  padding:.72rem .2rem .6rem;position:relative;
+}
+.lrow .rule-i{ /* the gold ruled line under each entry — a real element so GSAP can draw it */
+  position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--gold-rule);opacity:.75;display:block;
+}
+.lrow .t{font-size:.78rem;color:var(--ink-dim)}
+.lrow .d b{color:var(--ink-bold);font-weight:600;font-size:.98rem}
+.lrow .d span{display:block;font-size:.8rem;color:var(--ink-dim)}
+.lrow .amt{font-weight:600;font-size:1rem;text-align:right;white-space:nowrap}
+.amt.plus{color:var(--azure-deep)}
+.amt.minus{color:var(--gold-stroke)} /* deep gold — this brand has no red ink; #8a6915 holds AA (5.1:1) on white where #9c7318 fell short (4.3:1) */
+.amt.zero{color:var(--ink-dim)}
+.lrow.total{grid-template-columns:1fr auto;padding-top:1rem}
+.lrow.total .d b{font-family:var(--serif);font-size:1.12rem}
+.lrow.total .amt{
+  font-size:1.5rem;font-family:var(--serif);font-weight:700;
+  background:var(--gold-text);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lp-foot{margin-top:.4rem;font-size:.74rem;color:var(--ink-dim);text-align:right;font-style:italic}
+.ledger-caption{max-width:680px;margin:1.4rem auto 0;text-align:center;color:var(--ink-dim);font-size:.95rem}
+
+/* =================== FEATURES: LEDGER ENTRIES =================== */
+.fentry-list{margin-top:2rem}
+.fentry{
+  display:grid;
+  grid-template-columns:3.2rem minmax(0,17rem) minmax(0,1fr);
+  gap:clamp(1rem,3vw,2.5rem);
+  align-items:start;
+  padding:clamp(1.4rem,3vw,1.9rem) 0;
+}
+.fentry .eno{
+  font-family:var(--serif);font-style:italic;color:var(--gold-stroke);
+  font-size:1rem;font-variant-numeric:tabular-nums;padding-top:.3rem;
+}
+.fentry h3{
+  font-family:var(--serif);font-weight:600;color:var(--ink-bold);
+  font-size:clamp(1.3rem,2.2vw,1.6rem);line-height:1.2;
+  display:flex;align-items:flex-start;gap:.7rem;
+}
+.fentry h3 svg{flex:none;color:var(--azure);margin-top:.3rem}
+.fentry p{color:var(--ink-dim);max-width:32rem;font-size:.98rem}
+.fentry p strong{color:var(--ink);font-weight:600}
+@media (max-width:880px){
+  .fentry{grid-template-columns:2.4rem minmax(0,1fr)}
+  .fentry p{grid-column:2}
+}
+@media (max-width:480px){
+  .fentry{grid-template-columns:1fr}
+  .fentry .eno{padding-top:0}
+  .fentry p{grid-column:1}
+}
+
+/* =================== PRIVACY =================== */
+.priv-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;margin-top:1.6rem}
+@media (max-width:840px){.priv-grid{grid-template-columns:1fr}}
+.priv-list{list-style:none;display:grid;gap:1.15rem}
+.priv-list li{display:flex;gap:1rem;align-items:flex-start}
+.priv-list .ic{
+  flex:none;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:#fff;color:var(--azure-deep);box-shadow:var(--shadow-card);
+  border:1px solid rgba(10,109,186,.14);
+}
+.priv-list b{color:var(--ink-bold);display:block;font-size:1rem}
+.priv-list p{font-size:.92rem;color:var(--ink-dim)}
+.vault{
+  background:var(--card);border-radius:18px;box-shadow:var(--shadow-card);padding:2rem;
+  text-align:center;position:relative;overflow:hidden;
+}
+.vault::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:84px;height:2px;border-radius:2px;
+  background:var(--gold-rule);
+}
+.vault img{width:96px;height:96px;margin:0 auto 1.1rem;border-radius:22px;box-shadow:0 10px 24px -8px rgba(8,72,126,.4)}
+.vault h3{font-family:var(--serif);font-size:1.3rem;color:var(--ink-bold);margin-bottom:.5rem}
+.vault p{font-size:.93rem;color:var(--ink-dim);max-width:26em;margin:0 auto}
+.vault .roles{display:flex;justify-content:center;gap:.45rem;flex-wrap:wrap;margin-top:1.1rem}
+.vault .roles span{
+  font-size:.74rem;font-weight:600;letter-spacing:.05em;color:var(--azure-deep);
+  border:1px solid rgba(10,109,186,.28);border-radius:999px;padding:.28rem .75rem;background:rgba(60,180,239,.07);
+}
+.vault .fine{margin-top:1.2rem;font-size:.84rem}
+
+/* =================== PERSONAL TALLY =================== */
+.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-top:2.2rem}
+@media (max-width:580px){.tally{grid-template-columns:repeat(2,1fr)}}
+.tally .cell{
+  background:var(--card);border-radius:14px;padding:1.4rem 1rem 1.2rem;text-align:center;box-shadow:var(--shadow-card);
+}
+.tally .fig{
+  font-family:var(--serif);font-weight:700;font-size:2.6rem;line-height:1;color:var(--ink-bold);
+}
+.tally .fig::after{content:"";display:block;width:34px;height:2px;background:var(--gold-rule);margin:.55rem auto .6rem;border-radius:1px}
+.tally .lab{font-size:.84rem;color:var(--ink-dim);font-weight:500}
+.tally .cell.wide{ /* full-width banner row — no orphan cell at any breakpoint */
+  grid-column:1 / -1;
+  display:flex;align-items:baseline;justify-content:center;gap:.9rem;flex-wrap:wrap;
+  padding:1.1rem 1rem;
+}
+.tally .cell.wide .fig{font-size:2.2rem}
+.tally .cell.wide .fig::after{display:none}
+.tally .cell.wide .lab{font-size:.95rem}
+.pct{font-size:.5em}
+.tally-note{margin-top:1.4rem;color:var(--ink-dim);font-size:.95rem;max-width:46em}
+
+/* =================== INSTALL CTA =================== */
+.install{
+  margin:5.5rem 0 0;padding:4.5rem 0 5rem;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,rgba(60,180,239,.10),rgba(60,180,239,.02));
+  border-top:1px solid rgba(10,109,186,.12);
+}
+.install-glow{
+  position:absolute;left:50%;top:-220px;transform:translateX(-50%);
+  width:760px;height:560px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(191,232,255,.5),rgba(60,180,239,.14) 55%,transparent 75%);
+  will-change:transform;
+}
+.install .wrap{text-align:center;max-width:760px;position:relative}
+.install img.mark{width:96px;height:96px;margin:0 auto 1.4rem;border-radius:22px;box-shadow:0 12px 28px -8px rgba(8,72,126,.45)}
+.install h2{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,4.4vw,3rem);color:var(--ink-bold);line-height:1.12;margin-bottom:1rem}
+.install p.sub{color:var(--ink-dim);font-size:1.08rem;max-width:32em;margin:0 auto 2rem}
+.install-steps{
+  display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:2.2rem;
+  font-size:.88rem;color:var(--ink-dim);
+}
+.install-steps span{display:flex;align-items:center;gap:.5rem}
+.install-steps i{
+  font-style:normal;font-weight:600;font-size:.74rem;color:var(--gold-stroke);
+  border:1px solid rgba(138,105,21,.4);border-radius:50%;width:1.5rem;height:1.5rem;
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+}
+
+/* =================== FOOTER =================== */
+footer.site-foot{border-top:1px solid rgba(10,109,186,.12);padding:2.2rem 0 2.8rem;font-size:.88rem;color:var(--ink-dim)}
+footer.site-foot .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 2rem}
+.foot-brand{display:flex;align-items:center;gap:.55rem;color:var(--ink-bold)}
+.foot-brand img{width:24px;height:24px;border-radius:6px}
+.foot-brand b{font-family:var(--serif)}
+footer.site-foot nav{margin-left:auto;display:flex;gap:1.4rem;flex-wrap:wrap}
+footer.site-foot a{color:var(--ink-dim);text-decoration:none}
+footer.site-foot a:hover{color:var(--azure)}
+.foot-rule{max-width:var(--maxw);margin:0 auto 1.6rem;padding:0 24px}
+.foot-rule .gold-rule{opacity:.6}
+
+/* =================== REDUCED MOTION =================== */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none !important;animation:none !important}
+  .btn-azure:hover{transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- shared gold gradient for inline SVG strokes -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="ruleGold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f4dc8a"/>
+      <stop offset=".45" stop-color="#e4ba4c"/>
+      <stop offset=".7" stop-color="#c39a32"/>
+      <stop offset="1" stop-color="#9c7318"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="site" id="siteNav">
+  <div class="nav">
+    <a class="brand" href="#top" aria-label="The Ledger — home">
+      <img src="assets/icon-monogram.svg" alt="The Ledger monogram: a gold serif L on a blue field" width="34" height="34">
+      <b>The Ledger</b>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#why">Why it exists</a>
+      <a href="#day">A day, entered</a>
+      <a href="#features">Features</a>
+      <a href="#privacy">Your data</a>
+    </nav>
+    <details class="mnav" id="mnav">
+      <summary aria-label="Open menu">
+        <span class="visually-hidden">Menu</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </summary>
+      <nav class="mnav-panel" aria-label="Primary, mobile">
+        <a href="#why">Why it exists</a>
+        <a href="#day">A day, entered</a>
+        <a href="#features">Features</a>
+        <a href="#privacy">Your data</a>
+      </nav>
+    </details>
+    <a class="btn btn-azure cta" href="https://mkgotbank.github.io/ledger/">Open the app</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- =============== HERO =============== -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="hero-eyebrow"><span class="dot" aria-hidden="true"></span>Free inventory &amp; business manager<span class="dot" aria-hidden="true"></span></p>
+        <h1>
+          <span class="hl-line">Run your business</span>
+          <span class="hl-line"><span class="gold-word">by&nbsp;the&nbsp;book</span>.</span>
+        </h1>
+        <svg class="rules" viewBox="0 0 200 18" aria-hidden="true">
+          <path d="M2 4 C 60 1, 140 1, 198 4"/>
+          <path d="M6 10 C 62 7, 138 7, 194 10"/>
+          <path d="M12 16 C 66 13, 134 13, 188 16"/>
+        </svg>
+        <p class="hero-sub">The Ledger keeps your stock, sales, expenses and profit in one well-kept book — <strong>on your phone, fully offline, no account needed to start</strong>. It is free, and your data lives on your device.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-azure magnet" href="https://mkgotbank.github.io/ledger/">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Open The Ledger
+          </a>
+          <a class="btn btn-quiet" href="#day">See a day, entered</a>
+        </div>
+        <p class="hero-note">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+          Installs as an app on iPhone, Android and desktop. Works with no signal at all.
+        </p>
+      </div>
+
+      <div class="hero-art">
+        <span class="hero-glow" aria-hidden="true"></span>
+        <img class="hero-book" src="assets/icon-book.svg" alt="The Ledger app icon: an open book with ice-white pages, gilt edges and gold ruled lines" width="118" height="118">
+        <div class="phone" role="img" aria-label="Preview of The Ledger app: a dashboard showing today's revenue and profit, plus inventory rows with stock counts">
+          <div class="screen" aria-hidden="true">
+            <div class="app-head">
+              <img src="assets/icon-monogram.svg" alt="">
+              <b>The Ledger</b>
+              <span class="sync"><i></i>Saved on device</span>
+            </div>
+            <div class="stat-row num">
+              <div class="stat"><span class="lab">Revenue</span><span class="val">$<span data-count="104.50" data-dec="2">104.50</span></span></div>
+              <div class="stat"><span class="lab">Profit</span><span class="val gold">$<span data-count="60.55" data-dec="2">60.55</span></span></div>
+              <div class="stat"><span class="lab">In stock</span><span class="val"><span data-count="48" data-dec="0">48</span></span></div>
+            </div>
+            <p class="scr-label">Inventory</p>
+            <div class="item-rows num">
+              <div class="item">
+                <span class="swatch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></span>
+                <span><span class="nm">Lavender candle</span><br><span class="meta">8 oz tin</span></span>
+                <span class="pr"><b>$18.00</b><span>14 left</span></span>
+              </div>
+              <div class="item">
+                <span class="swatch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></span>
+                <span><span class="nm">Gift pack</span><br><span class="meta">Bundle · 3 items</span></span>
+                <span class="pr"><b>$54.00</b><span>6 left</span></span>
+              </div>
+              <div class="item">
+                <span class="swatch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></span>
+                <span><span class="nm">Wick trimmer</span><br><span class="meta">Accessory</span></span>
+                <span class="pr"><b>$14.50</b><span class="low">2 left</span></span>
+              </div>
+            </div>
+            <div class="app-foot">
+              <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            </div>
+          </div>
+        </div>
+        <span class="chip c1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 18.4A9 9 0 0 1 3 12a9 9 0 0 1 9-9 9 9 0 0 1 9 9c0 1.1-.2 2.2-.6 3.2M12 7v5l3 3"/></svg>
+          Works with zero signal
+        </span>
+        <span class="chip c2" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.4 3.4 8.2 8 9 4.6-.8 8-4.6 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          Data stays on your device
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== ENTRY 001: WHY =============== -->
+  <section class="entry" id="why">
+    <div class="wrap">
+      <div class="entry-head gs">
+        <span class="entry-no num">Entry No. 001</span>
+        <hr class="gold-rule gs-rule">
+        <span class="folio">Why it exists</span>
+      </div>
+      <h2 class="entry-title gs" data-d=".08">Every business deserves a well-kept book.</h2>
+      <div class="story-grid">
+        <div class="story gs" data-d=".16">
+          <p class="lede">For centuries, a business was its ledger — a bound book with ruled lines where every sale, every restock, every cent was written down and added up.</p>
+          <p class="first">Somewhere along the way that clarity got expensive. Inventory tools became subscriptions. Sales records moved to servers you do not control. The simple act of knowing <strong>what you have, what you sold, and what you actually made</strong> started requiring an account, a plan, and a connection.</p>
+          <p>The Ledger brings the book back. It is a free app that keeps your records the way a fine ledger always did — <strong>close at hand, in order, and yours</strong>. It opens on your phone, works with no internet, and asks for nothing to start. Not even an email.</p>
+          <p class="pull">Good records shouldn&rsquo;t be a luxury. They should be the default.</p>
+        </div>
+        <aside class="story-aside gs" data-d=".24">
+          <h3>What that means in practice</h3>
+          <ul>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>
+              <span><b>Free.</b> The whole app — not a trial, not a tier.</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>
+              <span><b>Offline.</b> Record a sale in a basement, a market stall, an airplane.</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>
+              <span><b>No account to start.</b> Open the link, start tracking. A free account is optional, only for cloud sync.</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>
+              <span><b>On your device.</b> By default your data never leaves your phone.</span>
+            </li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== ENTRY 002: SIGNATURE LEDGER =============== -->
+  <section class="entry" id="day">
+    <div class="wrap">
+      <div class="entry-head gs">
+        <span class="entry-no num">Entry No. 002</span>
+        <hr class="gold-rule gs-rule">
+        <span class="folio">A day, entered</span>
+      </div>
+      <h2 class="entry-title gs" data-d=".08">Watch a day write itself in.</h2>
+      <p class="entry-lede gs" data-d=".16">This is the whole idea: each sale, restock and expense becomes a clean line in your book, and the bottom line takes care of itself. Scroll, and a day fills in.</p>
+
+      <div class="ledger-stage">
+        <div class="ledger-page" id="ledgerPage">
+          <span class="ribbon" aria-hidden="true"></span>
+          <div class="lp-head">
+            <span class="title">Daily entries</span>
+            <span class="date num">Folio 24 — Tuesday</span>
+          </div>
+          <hr class="gold-rule">
+          <div class="lrow num">
+            <span class="t">09:02</span>
+            <span class="d"><b>Opening</b><span>48 items on hand</span></span>
+            <span class="amt zero">—</span>
+            <i class="rule-i" aria-hidden="true"></i>
+          </div>
+          <div class="lrow num">
+            <span class="t">09:12</span>
+            <span class="d"><b>Sale</b><span>2 × Lavender candle</span></span>
+            <span class="amt plus">+ $36.00</span>
+            <i class="rule-i" aria-hidden="true"></i>
+          </div>
+          <div class="lrow num">
+            <span class="t">10:05</span>
+            <span class="d"><b>Restock</b><span>24 × Jar, 4 oz</span></span>
+            <span class="amt minus">− $31.20</span>
+            <i class="rule-i" aria-hidden="true"></i>
+          </div>
+          <div class="lrow num">
+            <span class="t">12:40</span>
+            <span class="d"><b>Sale</b><span>Gift pack — bundle of 3</span></span>
+            <span class="amt plus">+ $54.00</span>
+            <i class="rule-i" aria-hidden="true"></i>
+          </div>
+          <div class="lrow num">
+            <span class="t">14:18</span>
+            <span class="d"><b>Expense</b><span>Shipping labels</span></span>
+            <span class="amt minus">− $12.75</span>
+            <i class="rule-i" aria-hidden="true"></i>
+          </div>
+          <div class="lrow num">
+            <span class="t">16:55</span>
+            <span class="d"><b>Sale</b><span>1 × Wick trimmer</span></span>
+            <span class="amt plus">+ $14.50</span>
+            <i class="rule-i" aria-hidden="true"></i>
+          </div>
+          <div class="lrow total num">
+            <span class="d"><b>Day's net</b></span>
+            <span class="amt" id="dayNet" data-net="60.55">$60.55</span>
+          </div>
+          <p class="lp-foot">Illustrative entries — every line above is something The Ledger records for you.</p>
+        </div>
+        <p class="ledger-caption gs">Every entry is also written to a full <strong>audit log</strong> — sales, edits, deletions and restores — so the book always shows its work.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== ENTRY 003: FEATURES, RULED LIKE A LEDGER =============== -->
+  <section class="entry" id="features">
+    <div class="wrap">
+      <div class="entry-head gs">
+        <span class="entry-no num">Entry No. 003</span>
+        <hr class="gold-rule gs-rule">
+        <span class="folio">What it keeps</span>
+      </div>
+      <h2 class="entry-title gs" data-d=".08">One book for the whole business.</h2>
+      <p class="entry-lede gs" data-d=".16">Everything below ships in the free app. No tiers, no trials, no locked pages.</p>
+
+      <div class="fentry-list">
+        <hr class="hairline gs" aria-hidden="true">
+        <article class="fentry gs">
+          <span class="eno num" aria-hidden="true">i.</span>
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>Stock &amp; restocks</h3>
+          <p>Track every item and every restock. Build <strong>packs and bundles</strong> from your inventory, and watch quantities update themselves as you sell.</p>
+        </article>
+
+        <hr class="hairline gs" aria-hidden="true">
+        <article class="fentry gs">
+          <span class="eno num" aria-hidden="true">ii.</span>
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg>Sales, expenses &amp; profit</h3>
+          <p>Record sales in seconds, log expenses alongside them, and read your real margin on <strong>profit &amp; stats dashboards</strong> — not a guess, an entry.</p>
+        </article>
+
+        <hr class="hairline gs" aria-hidden="true">
+        <article class="fentry gs">
+          <span class="eno num" aria-hidden="true">iii.</span>
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>Invoices</h3>
+          <p>Issue clean invoices from your records, with optional <strong>Interac e-Transfer payment instructions</strong> included for your Canadian customers.</p>
+        </article>
+
+        <hr class="hairline gs" aria-hidden="true">
+        <article class="fentry gs">
+          <span class="eno num" aria-hidden="true">iv.</span>
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6.5 6.5 0 0 1 6.5 6.5c0 2.4-1.3 4-2.5 5.5-.9 1.1-1 2-1 3h-6c0-1-.1-1.9-1-3-1.2-1.5-2.5-3.1-2.5-5.5A6.5 6.5 0 0 1 12 3Z"/><path d="M9.5 21h5"/></svg>An AI advisor, in the margins</h3>
+          <p>A built-in <strong>AI business advisor</strong> reads your numbers and offers honest counsel. Ask it about your business — or ask it how to use the app itself.</p>
+        </article>
+
+        <hr class="hairline gs" aria-hidden="true">
+        <article class="fentry gs">
+          <span class="eno num" aria-hidden="true">v.</span>
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a8 8 0 0 1 13.7-2.3"/><path d="M17 2v3h-3"/><path d="M20 19a8 8 0 0 1-13.7 2.3"/><path d="M7 22v-3h3"/><circle cx="12" cy="12" r="3"/></svg>Cloud sync &amp; a team, if you want them</h3>
+          <p>Stay solo and offline forever — or create a free account for <strong>sync across devices</strong>, multiple businesses in one app, and team roles by email invite: Owner, Admin, Staff, Viewer. Field-level merge means two devices editing at once never lose a side.</p>
+        </article>
+
+        <hr class="hairline gs" aria-hidden="true">
+        <article class="fentry gs">
+          <span class="eno num" aria-hidden="true">vi.</span>
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M9 7h7M9 11h7"/></svg>A full audit log</h3>
+          <p>Like a proper ledger, nothing vanishes quietly. <strong>Sales, edits, deletions and restores</strong> are all recorded, so you can always trace what changed and when.</p>
+        </article>
+        <hr class="hairline gs" aria-hidden="true">
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== ENTRY 004: PRIVACY =============== -->
+  <section class="entry" id="privacy">
+    <div class="wrap">
+      <div class="entry-head gs">
+        <span class="entry-no num">Entry No. 004</span>
+        <hr class="gold-rule gs-rule">
+        <span class="folio">Your data</span>
+      </div>
+      <h2 class="entry-title gs" data-d=".08">A book you own. Bound to your device.</h2>
+      <div class="priv-grid">
+        <ul class="priv-list">
+          <li class="gs">
+            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>
+            <span><b>On-device first</b>
+            <p>Your records live on your phone by default. No server sees them unless you choose to turn sync on.</p></span>
+          </li>
+          <li class="gs" data-d=".08">
+            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></span>
+            <span><b>One-tap backups &amp; restore</b>
+            <p>Save a local backup whenever you like and restore it whenever you need. Your safety net is in your hands.</p></span>
+          </li>
+          <li class="gs" data-d=".16">
+            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 17.5a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.6 1.5A3.8 3.8 0 0 0 7 18.5z"/><path d="m9.5 13.5 2 2 3.5-3.5"/></svg></span>
+            <span><b>Optional cloud sync that never loses a side</b>
+            <p>Turn on a free account and the same book follows you across devices, with <b>field-level merge</b> — two devices editing at once never overwrite each other. Deletions sync safely too.</p></span>
+          </li>
+          <li class="gs" data-d=".24">
+            <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.4 7 10 4-1.6 7-5.5 7-10V6z"/></svg></span>
+            <span><b>No account, ever, unless you want one</b>
+            <p>Everything works without signing up. An account exists for exactly one reason: syncing your own book to your own devices.</p></span>
+          </li>
+        </ul>
+        <div class="vault gs" data-d=".16">
+          <img src="assets/icon-book.svg" alt="The Ledger book icon" width="96" height="96">
+          <h3>Bring the team, keep control</h3>
+          <p>With sync on, run <b>multiple businesses</b> from one app and invite your team by email — each person gets exactly the access they need.</p>
+          <div class="roles">
+            <span>Owner</span><span>Admin</span><span>Staff</span><span>Viewer</span>
+          </div>
+          <p class="fine">Privacy Policy and Terms live inside the app. Made in Ontario, Canada.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== ENTRY 005: PERSONAL =============== -->
+  <section class="entry" id="personal">
+    <div class="wrap">
+      <div class="entry-head gs">
+        <span class="entry-no num">Entry No. 005</span>
+        <hr class="gold-rule gs-rule">
+        <span class="folio">Make it yours</span>
+      </div>
+      <h2 class="entry-title gs" data-d=".08">Bound to your taste, in your language.</h2>
+      <div class="tally num">
+        <div class="cell gs"><span class="fig"><span data-count="12" data-dec="0">12</span></span><span class="lab">Themes</span></div>
+        <div class="cell gs" data-d=".08"><span class="fig"><span data-count="10" data-dec="0">10</span></span><span class="lab">Fonts</span></div>
+        <div class="cell gs" data-d=".16"><span class="fig"><span data-count="10" data-dec="0">10</span></span><span class="lab">Languages</span></div>
+        <div class="cell gs" data-d=".24"><span class="fig"><span data-count="2" data-dec="0">2</span></span><span class="lab">App icons</span></div>
+        <div class="cell wide gs" data-d=".3"><span class="fig"><span data-count="100" data-dec="0">100</span><span class="pct">%</span></span><span class="lab">keyboard accessible — every screen works without a mouse or a touch</span></div>
+      </div>
+      <p class="tally-note gs" data-d=".24">Twelve themes — including the icy Arctic look this page wears — ten typefaces, two app icons and ten languages, with full keyboard access throughout. The book should feel like yours, because it is.</p>
+    </div>
+  </section>
+
+  <!-- =============== INSTALL =============== -->
+  <section class="install" id="install">
+    <span class="install-glow" aria-hidden="true"></span>
+    <div class="wrap">
+      <img class="mark gs" src="assets/icon-book.svg" alt="The Ledger book icon: an open ledger with gilt edges and gold ruled lines" width="96" height="96">
+      <h2 class="gs" data-d=".08">Open the book.</h2>
+      <p class="sub gs" data-d=".16">No download store, no sign-up, no card. Open the link, and your ledger is ready — add it to your home screen and it behaves like any other app.</p>
+      <p class="gs" data-d=".24">
+        <a class="btn btn-azure btn-hero magnet" href="https://mkgotbank.github.io/ledger/">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13.5"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20"/><path d="M9 8h6M9 12h6"/></svg>
+          Start your ledger — free
+        </a>
+      </p>
+      <div class="install-steps gs" data-d=".32">
+        <span><i>1</i> Open the link in your phone's browser</span>
+        <span><i>2</i> Choose “Add to Home Screen”</span>
+        <span><i>3</i> Start writing your book</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="foot-rule"><hr class="gold-rule"></div>
+  <div class="wrap">
+    <span class="foot-brand">
+      <img src="assets/icon-monogram.svg" alt="" width="24" height="24">
+      <b>The Ledger</b>
+    </span>
+    <span class="num">© 2026 The Ledger. Made in Ontario, Canada.</span>
+    <nav aria-label="Footer">
+      <a href="https://mkgotbank.github.io/ledger/">Open the app</a>
+      <a href="https://mkgotbank.github.io/ledger/">Privacy Policy (in-app)</a>
+      <a href="https://mkgotbank.github.io/ledger/">Terms (in-app)</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* locale-aware tabular formatting (en-CA) */
+  function fmt(n, dec){
+    return n.toLocaleString("en-CA", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+
+  /* ---- sticky nav: gold hairline + shadow after 12px ---- */
+  var navEl = document.getElementById("siteNav");
+  var navTick = false;
+  function navState(){
+    if (navTick) return;
+    navTick = true;
+    requestAnimationFrame(function(){
+      navEl.classList.toggle("scrolled", window.scrollY > 12);
+      navTick = false;
+    });
+  }
+  window.addEventListener("scroll", navState, { passive: true });
+  navState();
+
+  /* ---- mobile disclosure menu (native <details>; JS only closes it) ---- */
+  var mnav = document.getElementById("mnav");
+  if (mnav){
+    mnav.addEventListener("click", function(e){
+      if (e.target.closest(".mnav-panel a")) mnav.removeAttribute("open");
+    });
+    document.addEventListener("click", function(e){
+      if (mnav.hasAttribute("open") && !mnav.contains(e.target)) mnav.removeAttribute("open");
+    });
+  }
+
+  /* ---- everything below is enhancement; page is complete without it ---- */
+  if (reduced || !window.gsap || !window.ScrollTrigger) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* counters: HTML ships final values; zero them only now that we know we can animate */
+  var counters = gsap.utils.toArray("[data-count]");
+  counters.forEach(function(el){ el.textContent = fmt(0, +(el.dataset.dec || 0)); });
+  function countUp(el, dur){
+    var target = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0), o = { v: 0 };
+    gsap.to(o, {
+      v: target, duration: dur || 1.4, ease: "power2.out",
+      onUpdate: function(){ el.textContent = fmt(o.v, dec); },
+      onComplete: function(){ el.textContent = fmt(target, dec); }
+    });
+  }
+
+  /* ---- hero overture: eyebrow, headline lines, pen-ruled gold strokes, sub, CTAs, art, chips ---- */
+  var hero = gsap.timeline({ defaults: { ease: "power3.out" } });
+  hero.from(".hero-eyebrow", { y: 22, autoAlpha: 0, duration: .65 })
+      .from(".hl-line", { y: 46, autoAlpha: 0, duration: .85, stagger: .13 }, "-=.3")
+      .from(".rules path", { strokeDashoffset: 200, duration: .7, stagger: .14, ease: "power2.inOut" }, "-=.45")
+      .from(".hero-sub", { y: 24, autoAlpha: 0, duration: .7 }, "-=.55")
+      .from(".hero-ctas", { y: 22, autoAlpha: 0, duration: .6 }, "-=.45")
+      .from(".hero-note", { autoAlpha: 0, duration: .6 }, "-=.35")
+      .from(".hero-art", { y: 40, autoAlpha: 0, duration: 1 }, "-=.85")
+      .add(function(){
+        gsap.utils.toArray(".screen [data-count]").forEach(function(el){ countUp(el, 1.2); });
+      }, "-=.5")
+      .from(".chip", { scale: .7, autoAlpha: 0, duration: .55, stagger: .12, ease: "back.out(1.7)" }, "-=.45");
+
+  /* ---- restrained scroll reveals (y + opacity only) ---- */
+  gsap.utils.toArray(".gs").forEach(function(el){
+    gsap.from(el, {
+      y: 30, autoAlpha: 0, duration: .9, ease: "power3.out",
+      delay: +(el.dataset.d || 0),
+      scrollTrigger: { trigger: el, start: "top 86%", once: true }
+    });
+  });
+  /* gold rules draw themselves in section headers */
+  gsap.utils.toArray(".gs-rule").forEach(function(el){
+    gsap.from(el, {
+      scaleX: 0, transformOrigin: "left center", duration: 1.2, ease: "power3.out",
+      scrollTrigger: { trigger: el, start: "top 90%", once: true }
+    });
+  });
+
+  /* ---- tally counters on view ---- */
+  gsap.utils.toArray(".tally [data-count]").forEach(function(el){
+    ScrollTrigger.create({
+      trigger: el, start: "top 85%", once: true,
+      onEnter: function(){ countUp(el, 1.2); }
+    });
+  });
+
+  /* ---- signature: the ledger page writes itself in ----
+     Desktop: pinned + scrubbed, so the payoff cannot be scrolled past.
+     Small screens: a quick staggered play-through (180ms rhythm). */
+  var netEl = document.getElementById("dayNet");
+  var NET = parseFloat(netEl.dataset.net);
+  var mm = gsap.matchMedia();
+
+  mm.add("(min-width: 800px)", function(){
+    netEl.textContent = "$" + fmt(0, 2);
+    var rows = gsap.utils.toArray("#ledgerPage .lrow");
+    var tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".ledger-stage", start: "center center", end: "+=130%",
+        scrub: .5, pin: true, anticipatePin: 1
+      }
+    });
+    rows.forEach(function(r, i){
+      tl.from(r, { autoAlpha: 0, y: 16, duration: .5, ease: "power2.out" }, i * .42);
+      var ru = r.querySelector(".rule-i");
+      if (ru) tl.from(ru, { scaleX: 0, transformOrigin: "left center", duration: .45, ease: "power2.inOut" }, i * .42 + .12);
+    });
+    var o = { v: 0 };
+    tl.to(o, {
+      v: NET, duration: 1.1, ease: "none",
+      onUpdate: function(){ netEl.textContent = "$" + fmt(o.v, 2); }
+    }, (rows.length - 1) * .42);
+    return function(){ netEl.textContent = "$" + fmt(NET, 2); };
+  });
+
+  mm.add("(max-width: 799px)", function(){
+    netEl.textContent = "$" + fmt(0, 2);
+    var rows = gsap.utils.toArray("#ledgerPage .lrow");
+    var tl = gsap.timeline({ paused: true });
+    rows.forEach(function(r, i){
+      tl.from(r, { autoAlpha: 0, y: 16, duration: .55, ease: "power2.out" }, i * .18);
+      var ru = r.querySelector(".rule-i");
+      if (ru) tl.from(ru, { scaleX: 0, transformOrigin: "left center", duration: .5, ease: "power2.inOut" }, i * .18 + .1);
+    });
+    var o = { v: 0 };
+    tl.to(o, {
+      v: NET, duration: 1.2, ease: "power1.inOut",
+      onUpdate: function(){ netEl.textContent = "$" + fmt(o.v, 2); }
+    }, (rows.length - 1) * .18 + .1);
+    var st = ScrollTrigger.create({
+      trigger: "#ledgerPage", start: "top 72%", once: true,
+      onEnter: function(){ tl.play(); }
+    });
+    return function(){ st.kill(); netEl.textContent = "$" + fmt(NET, 2); };
+  });
+
+  /* ---- parallax depth: hero art layers + install flourish drift at different speeds ---- */
+  gsap.to(".hero-glow", { yPercent: 22, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
+  gsap.to(".hero-book", { y: -46, rotation: 10, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
+  gsap.to(".phone", { y: -18, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
+  gsap.to(".install-glow", { yPercent: -24, ease: "none",
+    scrollTrigger: { trigger: ".install", start: "top bottom", end: "bottom top", scrub: true } });
+
+  /* ---- magnetic-ish primary CTAs (pointer:fine only, transforms only) ---- */
+  if (window.matchMedia("(pointer: fine)").matches){
+    gsap.utils.toArray(".magnet").forEach(function(btn){
+      var xTo = gsap.quickTo(btn, "x", { duration: .35, ease: "power3" });
+      var yTo = gsap.quickTo(btn, "y", { duration: .35, ease: "power3" });
+      btn.addEventListener("pointermove", function(e){
+        var r = btn.getBoundingClientRect();
+        xTo((e.clientX - r.left - r.width / 2) * .16);
+        yTo((e.clientY - r.top - r.height / 2) * .28);
+      });
+      btn.addEventListener("pointerleave", function(){ xTo(0); yTo(0); });
+    });
+  }
+
+  window.addEventListener("load", function(){ ScrollTrigger.refresh(); });
+})();
+</script>
+</body>
+</html>

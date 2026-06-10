@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="fieldA" x1=".5" y1="0" x2=".5" y2="1">
+      <stop offset="0" stop-color="#3cb4ef"/>
+      <stop offset="55%" stop-color="#1a8fd6"/>
+      <stop offset="100%" stop-color="#0a66ac"/>
+    </linearGradient>
+    <radialGradient id="sheenA" cx=".5" cy="-.1" r="1">
+      <stop offset="0" stop-color="#bfe8ff" stop-opacity=".7"/>
+      <stop offset="55%" stop-color="#3cb4ef" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Polished metallic gold: highlight → mid → secondary sheen → deep base -->
+    <linearGradient id="metal" x1=".2" y1="0" x2=".8" y2="1">
+      <stop offset="0" stop-color="#fff7d8"/>
+      <stop offset="20%" stop-color="#f4dc8a"/>
+      <stop offset="40%" stop-color="#e4ba4c"/>
+      <stop offset="52%" stop-color="#c39a32"/>
+      <stop offset="64%" stop-color="#f1d574"/>
+      <stop offset="84%" stop-color="#d6ad40"/>
+      <stop offset="100%" stop-color="#9c7318"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2=".7" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".34" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".46" stop-color="#ffffff" stop-opacity=".65"/>
+      <stop offset=".54" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#063a64" flood-opacity=".55"/>
+    </filter>
+    <clipPath id="Lclip">
+      <text x="256" y="384" text-anchor="middle"
+            font-family="Didot,'Bodoni 72','Bodoni MT',Georgia,serif"
+            font-size="338" font-weight="bold">L</text>
+    </clipPath>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#fieldA)"/>
+  <rect width="512" height="512" rx="112" fill="url(#sheenA)"/>
+
+  <!-- Rounded white frame -->
+  <rect x="26" y="26" width="460" height="460" rx="92" fill="none" stroke="#ffffff" stroke-width="12" stroke-opacity=".92"/>
+  <rect x="42" y="42" width="428" height="428" rx="78" fill="none" stroke="#ffffff" stroke-width="2" stroke-opacity=".32"/>
+
+  <!-- Metallic L: clipped gradient + diagonal gloss, with shadow + crisp edge -->
+  <g filter="url(#lift)">
+    <g clip-path="url(#Lclip)">
+      <rect x="120" y="100" width="280" height="300" fill="url(#metal)"/>
+      <rect x="120" y="100" width="280" height="300" fill="url(#gloss)"/>
+    </g>
+    <text x="256" y="384" text-anchor="middle"
+          font-family="Didot,'Bodoni 72','Bodoni MT',Georgia,serif"
+          font-size="338" font-weight="bold" fill="none"
+          stroke="#8a6915" stroke-width="2" stroke-opacity=".55">L</text>
+  </g>
+
+  <!-- Slim ledger rule (gold) -->
+  <rect x="176" y="396" width="160" height="6" rx="3" fill="url(#metal)"/>
+</svg>
