@@ -482,9 +482,13 @@ footer.site-foot a:hover{color:var(--azure)}
   *,*::before,*::after{transition:none !important;animation:none !important}
   .btn-azure:hover{transform:none}
 }
+/* gold reading rule: scroll progress along the very top (decoration; stays hidden when animations are off) */
+.progress-rule{position:fixed;top:0;left:0;width:100%;height:3px;z-index:200;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,#fff7d8,#f4dc8a,#e4ba4c,#c39a32,#9c7318);pointer-events:none}
+.entry-title .w{display:inline-block}
 </style>
 </head>
 <body>
+<span class="progress-rule" aria-hidden="true"></span>
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- shared gold gradient for inline SVG strokes -->
@@ -953,7 +957,9 @@ footer.site-foot a:hover{color:var(--azure)}
 
   /* ---- restrained scroll reveals (y + opacity only) ---- */
   gsap.utils.toArray(".gs").forEach(function(el){
-    if (el.classList.contains("hairline")) return; /* hairlines draw instead, below */
+    /* these get their own, bolder treatments below */
+    if (el.classList.contains("hairline") || el.classList.contains("entry-title") ||
+        el.classList.contains("fentry") || (el.classList.contains("cell") && el.closest(".tally"))) return;
     gsap.from(el, {
       y: 30, autoAlpha: 0, duration: .9, ease: "power3.out",
       delay: +(el.dataset.d || 0),
@@ -966,6 +972,33 @@ footer.site-foot a:hover{color:var(--azure)}
       scaleX: 0, transformOrigin: "left center", duration: 1.1, ease: "power3.inOut",
       scrollTrigger: { trigger: el, start: "top 90%", once: true }
     });
+  });
+
+  /* gold reading rule: fills along the top of the page as you read the book */
+  gsap.to(".progress-rule", { scaleX: 1, ease: "none",
+    scrollTrigger: { trigger: document.body, start: "top top", end: "max", scrub: .3 } });
+
+  /* entry titles write themselves in, word by word */
+  gsap.utils.toArray(".entry-title").forEach(function(t){
+    var words = t.textContent.trim().split(/\s+/);
+    t.innerHTML = words.map(function(w){ return '<span class="w">' + w + '</span>'; }).join(' ');
+    gsap.from(t.querySelectorAll(".w"), {
+      y: "1.1em", autoAlpha: 0, duration: .7, ease: "power3.out", stagger: .07,
+      scrollTrigger: { trigger: t, start: "top 86%", once: true }
+    });
+  });
+
+  /* feature entries slide in along their rule; the roman numeral stamps in after */
+  gsap.utils.toArray(".fentry").forEach(function(f){
+    var tlf = gsap.timeline({ scrollTrigger: { trigger: f, start: "top 86%", once: true } });
+    tlf.from(f, { x: -36, autoAlpha: 0, duration: .7, ease: "power3.out" })
+       .from(f.querySelector(".eno"), { scale: .4, autoAlpha: 0, duration: .5, ease: "back.out(2.2)" }, "-=.4");
+  });
+
+  /* tally cells pop in */
+  gsap.from(".tally .cell", {
+    y: 26, autoAlpha: 0, scale: .9, duration: .65, ease: "back.out(1.7)", stagger: .09,
+    scrollTrigger: { trigger: ".tally", start: "top 84%", once: true }
   });
   /* gold rules draw themselves in section headers */
   gsap.utils.toArray(".gs-rule").forEach(function(el){
