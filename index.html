@@ -16,7 +16,6 @@
 <meta name="twitter:image" content="https://mkgotbank.github.io/ledger-site/assets/icon-1024.png">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon-1024.png">
-<meta name="theme-color" content="#eef6ff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -59,6 +58,7 @@ a{color:var(--azure)}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .skip{position:absolute;left:-999px;top:0;background:var(--azure-deep);color:#fff;padding:.6rem 1rem;z-index:99;border-radius:0 0 8px 0}
+.svg-defs{position:absolute}
 .skip:focus{left:0}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
 
@@ -66,8 +66,8 @@ a{color:var(--azure)}
 header.site{
   position:sticky;top:0;z-index:50;
   background:rgba(238,246,255,.86);
-  backdrop-filter:saturate(1.2) blur(10px);
   -webkit-backdrop-filter:saturate(1.2) blur(10px);
+  backdrop-filter:saturate(1.2) blur(10px);
   border-bottom:1px solid rgba(196,154,50,0);
   transition:border-color .3s ease,box-shadow .3s ease;
 }
@@ -492,7 +492,7 @@ footer.site-foot a:hover{color:var(--azure)}
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- shared gold gradient for inline SVG strokes -->
-<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+<svg width="0" height="0" aria-hidden="true" class="svg-defs">
   <defs>
     <linearGradient id="ruleGold" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#f4dc8a"/>
